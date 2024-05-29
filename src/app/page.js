@@ -1,95 +1,129 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+
+import "./home.css";
+import {onAuthStateChanged} from "firebase/auth";
+import {auth} from "./state/firebase/init";
+import {collection, onSnapshot, query, where} from "firebase/firestore";
+import {useEffect, useRef, useState} from "react";
 
 export default function Home() {
+  const [users, setUsers] = useState([]);
+  const [patient, setPatient] = useState("");
+  const [description, setDescription] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [date, setDate] = useState("");
+  const userId = useRef("");
+  const [error, setError] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        userId.current = user.uid;
+        try {
+          const q = query(collection(db, "users"), where("id", "!=", user.uid));
+          onSnapshot(q, (querySnapshot) => {
+            const urs = [];
+            querySnapshot.forEach((doc) => {
+              urs.push(doc.data());
+            });
+            setUsers(urs);
+            setLoading(false);
+          });
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      } else {
+        // Redirect to signin
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleAddAppointment = async (event) => {
+    event.preventDefault();
+    setError([]);
+
+    const errs = [];
+    if (!date) {
+      errs.push("Please select a date");
+    }
+    if (!startTime) {
+      errs.push(`Please select a start time`);
+    }
+    if (!endTime) {
+      errs.push(`Please select an end time`);
+    }
+    if (!description) {
+      errs.push(`Please enter a description`);
+    }
+
+    if (errs.length === 0) {
+      try {
+        const docRef = await addDoc(collection(db, "appointments"), {
+          patient,
+          visitor: userId.current,
+          description,
+          start: startTime,
+          end: endTime,
+          date,
+        });
+        if (docRef) {
+          setPatient("");
+          setDescription("");
+          setStartTime("");
+          setEndTime("");
+        } else {
+          setError(["Something went wrong"]);
+        }
+      } catch (error) {
+        console.error("Error adding appointment:", error);
+        setError(["Something went wrong"]);
+      }
+    } else {
+      setError(errs);
+    }
+  };
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
+    <main>
+      <h1>Book a visit to your loved ones</h1>
+      <p>They receive your bookings in their tablet application.</p>
+      <form onSubmit={handleAddAppointment}>
+        {error.length > 0 &&
+          error.map((err, index) => (
+            <p key={index} className="error">
+              {err}
+            </p>
+          ))}
         <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+          <label htmlFor="title">Title</label>
+          <input type="text" id="title" name="title" required />
         </div>
-      </div>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+        <div>
+          <label htmlFor="description">Description</label>
+          <textarea id="description" name="description" required></textarea>
+        </div>
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+        <div>
+          <label htmlFor="date">Date</label>
+          <input type="date" id="date" name="date" required />
+        </div>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
+        <div>
+          <label htmlFor="start-time">Start Time</label>
+          <input type="time" id="start-time" name="start-time" required />
+        </div>
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
+        <div>
+          <label htmlFor="end-time">End Time</label>
+          <input type="time" id="end-time" name="end-time" required />
+        </div>
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+        <button type="submit">Submit</button>
+      </form>
     </main>
   );
 }
