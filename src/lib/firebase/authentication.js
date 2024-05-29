@@ -1,36 +1,32 @@
 import {
+  browserLocalPersistence,
+  browserSessionPersistence,
   createUserWithEmailAndPassword,
+  getAuth,
   onAuthStateChanged,
+  setPersistence,
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
 import {auth} from "./init";
 import {setDocument} from "./database";
-import {router} from "expo-router";
+import {collection, onSnapshot, query} from "firebase/firestore";
+import {useRouter} from "next/navigation";
 
-// onAuthStateChanged(auth, (user) => {
-//   const dispatch = useDispatch();
-//   if (user) {
-//     dispatch(setUser(user));
-//   } else {
-//     dispatch(clearUser());
-//     console.log("User is signed out");
-//   }
-// });
+async function signupPersist(email, pwd) {
+  await setPersistence(auth, browserLocalPersistence);
+  return createUserWithEmailAndPassword(auth, email, pwd);
+}
 
 export async function signup(email, pwd, tel, first_name, last_name) {
   try {
-    console.log(email, pwd, tel);
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      pwd,
-      
-    );
+    const userCredential = await signupPersist(email, pwd);
     const user = userCredential.user;
 
     const userData = {
       id: user.uid,
+      first_name,
+      last_name,
       email: user.email,
       tel: tel,
     };
@@ -64,10 +60,14 @@ export async function signup(email, pwd, tel, first_name, last_name) {
   }
 }
 
+async function signinPersist(email, pwd) {
+  await setPersistence(auth, browserLocalPersistence);
+  return signInWithEmailAndPassword(auth, email, pwd);
+}
+
 export async function signin(email, pwd) {
   try {
-    console.log(email, pwd);
-    const userCredential = await signInWithEmailAndPassword(auth, email, pwd);
+    const userCredential = await signinPersist(email, pwd);
     const user = userCredential.user;
     return {data: user, error: null};
   } catch (error) {

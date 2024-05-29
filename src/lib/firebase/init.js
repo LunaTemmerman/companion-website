@@ -1,6 +1,12 @@
 import {initializeApp} from "firebase/app";
 import {getFirestore} from "firebase/firestore";
-import {initializeAuth} from "firebase/auth";
+import {
+  browserLocalPersistence,
+  browserSessionPersistence,
+  getAuth,
+  initializeAuth,
+  setPersistence,
+} from "firebase/auth";
 import {getStorage} from "firebase/storage";
 
 const firebaseConfig = {
@@ -17,12 +23,10 @@ let auth;
 let db;
 let storage;
 
-export function init() {
-  console.log(process.env);
-  app = initializeApp(firebaseConfig);
-  auth = initializeAuth(app);
-  db = getFirestore(app);
-  storage = getStorage(app);
-}
+app = initializeApp(firebaseConfig);
+auth = initializeAuth(app);
+getAuth().setPersistence(browserLocalPersistence);
+db = getFirestore(app);
+storage = getStorage(app);
 
 export {app, auth, db, storage};

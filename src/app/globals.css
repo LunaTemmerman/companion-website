@@ -112,7 +112,7 @@ button {
   padding: 1rem;
 }
 
-input, textarea {
+input, textarea, select {
   margin-bottom: 20px;
   padding: 10px;
   border: 1px solid #ccc;
@@ -123,6 +123,32 @@ input, textarea {
 input:focus, textarea:focus {
   outline: none;
   border-color: #007bff; /* Change to desired focus color */
+}
+
+.card {
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid #92CBCA;
+  margin-block: 0.5rem;
+}
+
+ul {
+  list-style: none;
+}
+
+a.sober {
+  color: #007bff;
+  background-color: transparent;
+  padding: none;
+  border-radius: none;
+  text-decoration: none;
+  box-shadow: none;
+}
+
+form > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 nav {
