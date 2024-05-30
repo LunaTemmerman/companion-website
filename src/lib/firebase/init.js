@@ -1,12 +1,6 @@
 import {initializeApp} from "firebase/app";
 import {getFirestore} from "firebase/firestore";
-import {
-  browserLocalPersistence,
-  browserSessionPersistence,
-  getAuth,
-  initializeAuth,
-  setPersistence,
-} from "firebase/auth";
+import {initializeAuth} from "firebase/auth";
 import {getStorage} from "firebase/storage";
 
 const firebaseConfig = {
@@ -15,7 +9,7 @@ const firebaseConfig = {
   projectId: "jongdementie-mobile",
   storageBucket: "jongdementie-mobile.appspot.com",
   messagingSenderId: "935504245196",
-  appId: "1:935504245196:web:d9f60b28731edff06fed69",
+  appId: "1:935504245196:web:ae8fee9a068bf34c6fed69",
 };
 
 let app;
@@ -25,7 +19,6 @@ let storage;
 
 app = initializeApp(firebaseConfig);
 auth = initializeAuth(app);
-getAuth().setPersistence(browserLocalPersistence);
 db = getFirestore(app);
 storage = getStorage(app);
 

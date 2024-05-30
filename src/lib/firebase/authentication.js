@@ -1,26 +1,17 @@
 import {
   browserLocalPersistence,
-  browserSessionPersistence,
   createUserWithEmailAndPassword,
-  getAuth,
-  onAuthStateChanged,
   setPersistence,
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
 import {auth} from "./init";
 import {setDocument} from "./database";
-import {collection, onSnapshot, query} from "firebase/firestore";
-import {useRouter} from "next/navigation";
-
-async function signupPersist(email, pwd) {
-  await setPersistence(auth, browserLocalPersistence);
-  return createUserWithEmailAndPassword(auth, email, pwd);
-}
 
 export async function signup(email, pwd, tel, first_name, last_name) {
   try {
-    const userCredential = await signupPersist(email, pwd);
+    await setPersistence(auth, browserLocalPersistence);
+    const userCredential = await createUserWithEmailAndPassword(email, pwd);
     const user = userCredential.user;
 
     const userData = {
@@ -60,14 +51,10 @@ export async function signup(email, pwd, tel, first_name, last_name) {
   }
 }
 
-async function signinPersist(email, pwd) {
-  await setPersistence(auth, browserLocalPersistence);
-  return signInWithEmailAndPassword(auth, email, pwd);
-}
-
 export async function signin(email, pwd) {
   try {
-    const userCredential = await signinPersist(email, pwd);
+    await setPersistence(auth, browserLocalPersistence);
+    const userCredential = await signInWithEmailAndPassword(auth, email, pwd);
     const user = userCredential.user;
     return {data: user, error: null};
   } catch (error) {
@@ -99,7 +86,6 @@ export async function signin(email, pwd) {
 export async function signout() {
   try {
     await signOut(auth);
-    router.replace("/signin");
     return {data: "Sign out successful", error: null};
   } catch (error) {
     const errorCode = error.code;

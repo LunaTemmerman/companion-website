@@ -203,8 +203,7 @@ export default function Home() {
             <li key={visit.id} className="card">
               <p>{new Date(visit.date.seconds).toLocaleDateString()}</p>
               <p>
-                {visit.start.hours}:{visit.start.minutes} - {visit.end.hours}:
-                {visit.end.minutes}
+                {visit.start} - {visit.end}
               </p>
               <p>
                 {users.find((user) => user.id === visit.patient).first_name}{" "}
