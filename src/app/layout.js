@@ -24,6 +24,9 @@ export default function RootLayout({children}) {
   }, []);
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/logo.svg" sizes="any" />
+      </head>
       <body className={inter.className}>
         <header>
           <img src="/logo.svg" alt="bleu and white circle logo icon" />
