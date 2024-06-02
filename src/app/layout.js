@@ -9,16 +9,17 @@ import {onAuthStateChanged} from "firebase/auth";
 const inter = Inter({subsets: ["latin"]});
 
 export default function RootLayout({children}) {
-  const authenticated = useRef(false);
+  const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     setLoading(true);
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
-        authenticated.current = false;
+        setAuthenticated(false);
       } else {
-        authenticated.current = true;
+        setAuthenticated(true);
       }
+      setLoading(false);
     });
     return unsubscribe;
   }, []);
