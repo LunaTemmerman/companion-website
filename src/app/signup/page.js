@@ -25,8 +25,8 @@ export default function SignUp() {
   };
   return (
     <main>
-      <h1>Sign in</h1>
-      <p>Welcome back!</p>
+      <h1>Sign up</h1>
+      <p>Welcome!</p>
       {error && <p className="error">{error}</p>}
       <form onSubmit={handleSubmit}>
         <label htmlFor="first_name">First name</label>
