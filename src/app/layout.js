@@ -32,7 +32,7 @@ export default function RootLayout({children}) {
         <header>
           <img src="/logo.svg" alt="bleu and white circle logo icon" />
           <nav>
-            {authenticated.current ? (
+            {authenticated ? (
               <a href="/signout">Sign out</a>
             ) : (
               <a href="/signin">Sign in</a>
