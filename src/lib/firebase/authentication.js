@@ -10,8 +10,11 @@ import {setDocument} from "./database";
 
 export async function signup(email, pwd, tel, first_name, last_name) {
   try {
-    await setPersistence(auth, browserLocalPersistence);
-    const userCredential = await createUserWithEmailAndPassword(email, pwd);
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      pwd
+    );
     const user = userCredential.user;
 
     const userData = {
@@ -26,6 +29,7 @@ export async function signup(email, pwd, tel, first_name, last_name) {
 
     return {data: user, error: null};
   } catch (error) {
+    console.error(error);
     const errorCode = error.code;
     const errorMessage = error.message;
     let userFriendlyMessage;
@@ -53,7 +57,6 @@ export async function signup(email, pwd, tel, first_name, last_name) {
 
 export async function signin(email, pwd) {
   try {
-    await setPersistence(auth, browserLocalPersistence);
     const userCredential = await signInWithEmailAndPassword(auth, email, pwd);
     const user = userCredential.user;
     return {data: user, error: null};

@@ -1,6 +1,6 @@
 "use client";
 
-import {signin, signup} from "@/lib/firebase/authentication";
+import {signup} from "@/lib/firebase/authentication";
 import {useRouter} from "next/navigation";
 import {useState} from "react";
 
@@ -20,6 +20,7 @@ export default function SignUp() {
     if (!error) {
       router.push("/");
     } else {
+      console.error(error);
       setError(error);
     }
   };
